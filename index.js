@@ -3,6 +3,19 @@ const app = express();
 
 app.use(express.json());
 
+const morgan = require("morgan");
+morgan.token("info", (req, res) => {
+  if (req.method === "POST") {
+    console.log(
+      `${req.method} ${req.url} ${res.statusCode} ${JSON.stringify(req.body)}`
+    );
+  } else {
+    console.log(`${req.method} ${req.url} ${res.statusCode}`);
+  }
+});
+
+app.use(morgan(":info"));
+
 let persons = [
   {
     id: 1,
@@ -38,7 +51,7 @@ app.get("/api/persons/:id", (req, res) => {
   const person = persons.find((p) => p.id === id);
 
   if (person) {
-    res.send(person);
+    res.json(person);
   } else {
     res.status(404).end();
   }
